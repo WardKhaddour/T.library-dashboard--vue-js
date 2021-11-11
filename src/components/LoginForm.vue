@@ -24,7 +24,15 @@
 
         <p v-if="isLoading"><loading-spinner></loading-spinner></p>
       </div> -->
-      <input type="button" value="login" />
+      <input
+        id="submit"
+        @click="submitForm"
+        type="button"
+        value="login"
+        v-if="!isLoading"
+      />
+      <loading-spinner id="submit" v-if="isLoading"></loading-spinner>
+
       <br />
     </form>
     <div id="alert" style="color: red"></div>
@@ -85,15 +93,18 @@ export default {
           console.log(this.password);
           //login
           this.$http
-            .post("api/loginAdmin", {
+            .post("loginAdmin", {
               email: this.email,
               password: this.password,
             })
             .then((res) => {
               this.isLoading = false;
               console.log(res);
-              let token = res["body"]["token"];
+              let token = res.body.token;
               console.log(token);
+              this.$store.state.token = token;
+              this.$store.commit("saveUser");
+              console.log(this.$store.state.token);
               this.$router.push({ name: "home" }).catch((error) => {
                 console.log(error);
               });
@@ -170,5 +181,8 @@ input:focus {
   color: red;
   font-size: 60%;
   opacity: 0.7;
+}
+#loading-spinner {
+  position: absolute;
 }
 </style>
